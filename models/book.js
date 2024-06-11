@@ -1,26 +1,32 @@
 const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema({
-    title:{
-        type:String,
+    title: {
+        type: String,
+        required: true,
     },
-    desc:{
+    desc: {
+        type: String,
+        required: true,
+    },
+    image: {
         type: String,
     },
-    image:{
+    price: {
+        type: Number,
+        required: true,
+    },
+    cat_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category',
+        required: true,
+    },
+    author: {
         type: String,
-    },
-    price:{
-        type:Number,
-    },
-    cat_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: 'category'
-    },
-    auth_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: 'author'
+        required: true,
     }
-})
+}, {
+    timestamps: true // This option adds createdAt and updatedAt fields automatically
+});
 
-module.exports = mongoose.model('book', bookSchema)
+module.exports = mongoose.model('book', bookSchema);

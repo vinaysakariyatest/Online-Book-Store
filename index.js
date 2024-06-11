@@ -10,10 +10,8 @@ require('./db/connection')
 app.use(express.json())
 
 const adminRoute = require('./routes/admin')
-const authorRoute = require('./routes/author')
 
 app.use('/admin',adminRoute)
-app.use('/author',authorRoute)
 
 const PORT = process.env.PORT || 8000
 

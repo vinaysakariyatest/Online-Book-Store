@@ -1,7 +1,6 @@
 const admin = require("../models/admin");
-const author = require("../models/author");
 const category = require("../models/category");
-const book = require('../models/book')
+const book = require("../models/book")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -50,86 +49,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// Add Author
-exports.addAuthor = async (req, res) => {
-  try {
-    const { error, value } = validation.authorValidation.validate(req.body);
-
-    if(error) {
-      return res.status(500).json({ message: error.details[0].message });
-    }
-
-    const { name, email, password, MobileNumber } =req.body;
-
-    if (!name || !email || !password || !MobileNumber) {
-      return res
-        .status(400)
-        .json({ message: "Please provide the all fields." });
-    }
-
-    const existEmail = await author.findOne({ email });
-
-    if (existEmail) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    // console.log(hashedPassword);
-
-    const createAuthor = await author.create({
-      name,
-      email,
-      password: hashedPassword,
-      MobileNumber,
-    });
-
-    return res.status(200).json({
-      createAuthor,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-// Update Author
-exports.editAuthor = async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    const updateAuthor = await author.findByIdAndUpdate(id, {
-      ...req.body,
-    });
-
-    if (updateAuthor == null) {
-      return res.status(404).json({ messge: "Author not found" });
-    }
-
-    return res.status(200).json({
-      message: "Author updated",
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-// Delete Author
-exports.deleteAuthor = async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    const authorDelete = await author.findByIdAndDelete(id);
-
-    if (authorDelete == null) {
-      return res.status(404).json({ messge: "Author not found" });
-    }
-
-    return res.status(200).json({
-      message: "Author deleted",
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
 
 // View All Categories
 exports.viewAuthor = async (req, res) => {
@@ -230,7 +149,7 @@ exports.addBook = async (req, res) => {
         return res.status(500).json({ message: error.details[0].message });
       }
 
-      const { title, desc, image, price, cat_id } = req.body;
+      const { title, desc, image, price, cat_id, author } = req.body;
   
       if (!title || !desc || !image || !price || !cat_id) {
         return res.status(400).json({ message: "Please provide all fields." });
@@ -251,7 +170,7 @@ exports.addBook = async (req, res) => {
           image,
           price,
           cat_id,
-          auth_id: req.decoded.id
+          author
       })
   
       return res.status(200).json({
@@ -301,7 +220,7 @@ exports.deleteBook = async (req, res) => {
   }
 };
 
-// Update Category
+// Update Book
 exports.editBook = async (req, res) => {
   try {
     const id = req.params.id;
@@ -321,5 +240,7 @@ exports.editBook = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
 
   

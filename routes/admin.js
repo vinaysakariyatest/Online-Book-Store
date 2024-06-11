@@ -6,11 +6,6 @@ const auth = require('../middleware/auth')
 
 router.post('/login',admin.login)
 
-// Author
-router.post('/author',auth,admin.addAuthor)
-router.put('/author/:id',admin.editAuthor)
-router.delete('/author/:id',admin.deleteAuthor)
-router.get('/author',auth,admin.viewAuthor)
 
 // Category
 router.post('/category',auth,admin.addCategory)
