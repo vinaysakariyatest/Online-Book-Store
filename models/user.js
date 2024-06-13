@@ -15,6 +15,9 @@ const useerSchema = new mongoose.Schema({
     },
     phone:{
         type:Number,
+    },
+    token:{
+        type:String,
     }
 })
 

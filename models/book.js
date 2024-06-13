@@ -1,32 +1,35 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const bookSchema = new mongoose.Schema({
+const bookSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     desc: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     image: {
-        type: String,
+      type: String,
     },
     price: {
-        type: Number,
-        required: true,
+      type: Number,
+      required: true,
     },
     cat_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'category',
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "category",
+      required: true,
     },
     author: {
-        type: String,
-        required: true,
-    }
-}, {
-    timestamps: true // This option adds createdAt and updatedAt fields automatically
-});
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true, // This option adds createdAt and updatedAt fields automatically
+  }
+);
 
-module.exports = mongoose.model('book', bookSchema);
+module.exports = mongoose.model("book", bookSchema);

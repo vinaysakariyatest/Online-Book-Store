@@ -153,9 +153,9 @@ exports.addBook = async (req, res) => {
 
       const { title, desc, image, price, cat_id, author } = req.body;
   
-      if (!title || !desc || !image || !price || !cat_id) {
-        return res.status(400).json({ message: "Please provide all fields." });
-      }
+      // if (!title || !desc || !image || !price || !cat_id) {
+      //   return res.status(400).json({ message: "Please provide all fields." });
+      // }
   
       const findCat = await category.findById(cat_id);
       // console.log(findCat)
@@ -169,7 +169,7 @@ exports.addBook = async (req, res) => {
       const createBook = await book.create({
           title,
           desc,
-          image,
+          image:req.file.filename,
           price,
           cat_id,
           author
@@ -271,19 +271,19 @@ exports.updateOrder = async (req, res) => {
       { new: true } // Return the updated document
     ).populate("user_id");
 
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    const userDetail= updatedOrder.user_id
-    // console.log(userDetail);
-    const email = userDetail.email
-
-    const msg = `Hi ${userDetail.name} your Order Status is: ${status}`;
+    if (!updatedOrder || updatedOrder.length === 0) {
+      return res.status(404).json({ message: "Order not Updated" });
+    }else{
+      const userDetail= updatedOrder.user_id
+      // console.log(userDetail);
+      const email = userDetail.email
   
-    mailer.sendMail(email,"Order Status", msg);
-
-    res.status(200).json({ message: "Order status updated", order: updatedOrder });
+      const msg = `Hi ${userDetail.name} your Order Status is: ${status}`;
+    
+      mailer.sendMail(email,"Order Status", msg);
+  
+      res.status(200).json({ message: "Order status updated", order: updatedOrder });
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

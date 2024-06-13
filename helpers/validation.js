@@ -16,7 +16,7 @@ const adminLogin = Joi.object({
 const bookValidation = Joi.object({
   title: Joi.string().min(1).max(50).required(),
   desc: Joi.string().min(1).required(),
-  image: Joi.string().required(),
+  // image: Joi.string().required(),
   price: Joi.number().required(),
   cat_id: Joi.string().required(),
   author: Joi.string().required(),

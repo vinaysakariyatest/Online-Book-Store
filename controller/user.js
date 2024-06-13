@@ -3,6 +3,7 @@ const book = require('../models/book');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
+const randomstring = require("randomstring");
 
 const validation = require("../helpers/validation");
 
@@ -129,6 +130,65 @@ exports.updatePassword = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
+}
+
+// Send Gorget Password Link
+exports.forget_password = async (req, res) => {
+  try {
+    const email = req.body.email;
+    
+    const userData = await user.findOne({ email});
+    
+    if(userData){
+      const randomString = randomstring.generate();
+      
+      await user.findOneAndUpdate(
+        { email: email },
+        { token: randomString },
+        { new: true }
+      );
+
+      const msg = `
+            <p>Hi ${userData.name},</p>
+            <p>Please copy the link and <a href="http://localhost:8000/user/reset-password?token=${randomString}">reset your password</a>.</p>
+        `;
+
+      mailer.sendMail(email, "For Reset Password", msg);
+
+      return res.status(200).json({
+        message: "Please check your mail box and reset your Password",
+      });
+    }else{
+      return res.status(400).json({message: "Invalid Email"})
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
+// Reset Password
+exports.rest_password = async (req, res) => {
+  try {
+    const token = req.query.token;
+    const tokenData = await user.findOne({ token});
+  
+    if (tokenData) {
+        const password = req.body.password;
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        await user.findOneAndUpdate(
+            { _id: tokenData._id },
+            { password: hashedPassword, token: "" },
+            { new: true }
+        );
+
+        return res.status(200).json({ message: "Your password has been reset." });
+    } else {
+        return res.status(400).json({ message: "This link has expired." });
+    }
+} catch (error) {
+    return res.status(500).json({ message: error.message})
+  }
 }
 
 // View Profile

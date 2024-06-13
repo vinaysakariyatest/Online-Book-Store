@@ -7,7 +7,8 @@ const app = express();
 dotenv.config({ path: './.env'})
 require('./db/connection')
 
-app.use(express.json())
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 const adminRoute = require('./routes/admin')
 const userRoute = require('./routes/user')
