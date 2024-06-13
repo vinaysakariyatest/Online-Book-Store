@@ -1,8 +1,10 @@
 const admin = require("../models/admin");
 const category = require("../models/category");
-const book = require("../models/book")
+const book = require("../models/book");
+const order = require("../models/order");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mailer = require("../helpers/mailer");
 
 const validation = require('../helpers/validation');
 
@@ -241,6 +243,82 @@ exports.editBook = async (req, res) => {
   }
 };
 
+// Update Order status
+exports.updateOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { statusValue } = req.body; 
 
+    if (statusValue == null) {
+      return res.status(400).json({ message: "Status value is required" });
+    }
 
+    const statusMapping = {
+      1: 'Accepted',
+      2: 'Delivered',
+      3: 'Cancelled',
+    };
+
+    const status = statusMapping[statusValue];
+
+    if (!status) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const updatedOrder = await order.findByIdAndUpdate(
+      orderId,
+      { status: status },
+      { new: true } // Return the updated document
+    ).populate("user_id");
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const userDetail= updatedOrder.user_id
+    // console.log(userDetail);
+    const email = userDetail.email
+
+    const msg = `Hi ${userDetail.name} your Order Status is: ${status}`;
   
+    mailer.sendMail(email,"Order Status", msg);
+
+    res.status(200).json({ message: "Order status updated", order: updatedOrder });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
+// Search Order
+exports.statusOrder = async (req, res) => {
+  try {
+
+      const status = req.params.status;
+      const searchOrder = await order.find({ status: status });
+  
+      if (!searchOrder || searchOrder.length === 0) {
+        return res.status(404).json({ message: `No ${status} orders found` });
+      }
+  
+      res.status(200).json({ message: "Pending orders retrieved", orders: searchOrder });
+  
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+    
+  }
+}
+
+// View All Orders
+exports.viewOrder = async (req, res) => {
+  try {
+    const showOrder = await order.find()
+
+    if(!showOrder || showOrder.length === 0) {
+      return res.status(404).json({ message: "Order is Empty" })
+    }
+
+    return res.status(200).json({ AllOrders: showOrder})
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}

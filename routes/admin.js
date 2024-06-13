@@ -19,4 +19,8 @@ router.get('/books',admin.viewAllBooks)
 router.delete('/books/:id',auth,admin.deleteBook)
 router.put('/books/:id',auth,admin.editBook)
 
+// Order
+router.put('/order/:id',admin.updateOrder)
+router.get('/search/:status',admin.statusOrder)
+router.get('/order',admin.viewOrder);
 module.exports = router

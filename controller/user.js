@@ -2,6 +2,7 @@ const user = require("../models/user");
 const book = require('../models/book');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mailer = require("../helpers/mailer");
 
 const validation = require("../helpers/validation");
 
@@ -24,6 +25,7 @@ exports.register = async (req, res) => {
       });
     }
 
+    const normalPassword = req.body.password
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const createUser = await user.create({
@@ -33,6 +35,12 @@ exports.register = async (req, res) => {
       address,
       phone,
     });
+
+    if(createUser){
+      const msg = "Your account has been registered in Online Book Store <br><b>Email:</b> " + createUser.email + "<br><b>Password:</b> " + normalPassword;
+  
+      mailer.sendMail(email,"Order Status", msg);
+    }
 
     return res.status(200).json({
       message: "Registration successfully!",

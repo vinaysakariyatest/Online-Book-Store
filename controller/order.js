@@ -2,6 +2,7 @@ const cart = require("../models/cart");
 const order = require("../models/order");
 const user = require("../models/user");
 const book = require("../models/book");
+const mailer = require("../helpers/mailer");
 
 // Cart Order
 exports.cartOrder = async (req, res) => {
@@ -83,6 +84,14 @@ exports.placeOrder = async (req, res) => {
       totalAmount: totalAmount
     });
 
+    const userDetail = await user.findById(Order.user_id);
+    const email = userDetail.email
+
+    const msg =
+        "<p> Hii <b>" +
+  userDetail.name + '</b>, your Order has been place successfully.</p>';
+  
+    mailer.sendMail(email,"Order Placed", msg);
     await Order.save();
 
     return res.status(200).json({
@@ -93,3 +102,24 @@ exports.placeOrder = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// View Order
+exports.viewOrder = async (req, res) => {
+  try {
+    const userId = req.decoded.id;
+
+    const getOrder = await order.find({ user_id: userId }).populate('items.product_id');
+    
+    if(!getOrder || getOrder.length === 0) {
+      return res.status(404).json({ 
+        message: "Empty order"
+      })
+    }
+
+    return res.status(200).json({
+      MyOrder: getOrder
+    })
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
