@@ -12,6 +12,12 @@ exports.addToCart = async (req, res) => {
 
     const productData = await book.findOne({ _id: productId });
 
+    if(!productData){
+      return res.status(404).json({
+        message: 'Product not found'
+      })
+    }
+
     const total = productData.price * qty;
     const price = productData.price;
 

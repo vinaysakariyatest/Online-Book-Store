@@ -51,24 +51,6 @@ exports.login = async (req, res) => {
   }
 };
 
-
-// View All Categories
-exports.viewAuthor = async (req, res) => {
-  try {
-    const showAuthor = await author.find();
-
-    if (showAuthor == null) {
-      return res.status(404).json({ message: "Author not found" });
-    }
-
-    return res.status(200).json({
-      showAuthor,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
 // Add Category
 exports.addCategory = async (req, res) => {
   try {
