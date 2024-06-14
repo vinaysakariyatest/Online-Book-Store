@@ -108,16 +108,17 @@ exports.updatePassword = async (req, res) => {
             })
         }
 
+        console.log(oldPassword);
+        console.log(newPassword);
         const isMatch = await bcrypt.compare(oldPassword, existPassword);
-        // console.log(isMatch);
 
         if(isMatch) {
             const hashedPassword = await bcrypt.hash(newPassword, 12);
             console.log(hashedPassword);
 
-            await user.updateOne({
-                password: hashedPassword
-            })
+            await user.findByIdAndUpdate(userId, {
+              password: hashedPassword
+          });
 
             return res.status(200).json({
                 message: "Password updated successfully"

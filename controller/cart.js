@@ -70,7 +70,7 @@ exports.viewCart = async (req, res) => {
 
     const showCartData = await cart.find({ user_id: userId });
 
-    if(!showCartData){
+    if(!showCartData || showCartData.length === 0) {
         return res.status(404).json({ 
             message: "Cart is Empty"
         })

@@ -20,7 +20,7 @@ exports.cartOrder = async (req, res) => {
       (total, item) => total + item.total,
       0
     );
-
+    
     const Order = new order({
       user_id: userId,
       items: cartItems.map((item) => ({
