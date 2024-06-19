@@ -5,8 +5,11 @@ const order = require("../models/order");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
-
 const validation = require("../helpers/validation");
+
+const Upload = require("../helpers/cloudinary");
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 // Admin Login
 exports.login = async (req, res) => {
@@ -133,23 +136,18 @@ exports.addBook = async (req, res) => {
 
     const { title, desc, image, price, cat_id, author } = req.body;
 
-    // if (!title || !desc || !image || !price || !cat_id) {
-    //   return res.status(400).json({ message: "Please provide all fields." });
-    // }
-
     const findCat = await category.findById(cat_id);
-    // console.log(findCat)
 
     if (!findCat) {
       return res.status(404).json({ message: "Category Id not Found" });
     }
 
-    // const authorId = req.decoded._id
-    // console.log(authorId)
+   const upload = await Upload.uploadFile(req.file.path)
+
     const createBook = await book.create({
       title,
       desc,
-      image: req.file.filename,
+      image: upload.secure_url,
       price,
       cat_id,
       author,
