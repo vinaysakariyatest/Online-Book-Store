@@ -9,14 +9,12 @@ cloudinary.config({
 const uploadFile = async(filePath) => {
 
     try {
-        
         const result = await cloudinary.uploader.upload(filePath);
         // console.log(result)
         return result;
     } catch (error) {
         console.log(error.message);
     }
-
 }
 
 module.exports = {

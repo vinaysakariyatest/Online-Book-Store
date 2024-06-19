@@ -40,7 +40,7 @@ exports.register = async (req, res) => {
     if(createUser){
       const msg = "Your account has been registered in Online Book Store <br><b>Email:</b> " + createUser.email + "<br><b>Password:</b> " + normalPassword;
   
-      mailer.sendMail(email,"Order Status", msg);
+      mailer.sendMail(email,"Registration", msg);
     }
 
     return res.status(200).json({
@@ -108,13 +108,10 @@ exports.updatePassword = async (req, res) => {
             })
         }
 
-        console.log(oldPassword);
-        console.log(newPassword);
         const isMatch = await bcrypt.compare(oldPassword, existPassword);
 
         if(isMatch) {
             const hashedPassword = await bcrypt.hash(newPassword, 12);
-            console.log(hashedPassword);
 
             await user.findByIdAndUpdate(userId, {
               password: hashedPassword
@@ -133,7 +130,7 @@ exports.updatePassword = async (req, res) => {
     }
 }
 
-// Send Gorget Password Link
+// Send Forget Password Link
 exports.forget_password = async (req, res) => {
   try {
     const email = req.body.email;
